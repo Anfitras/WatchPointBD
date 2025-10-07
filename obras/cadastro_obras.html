@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Cadastro de Obra</title>
+  </head>
+  <body>
+    <main>
+      <h1>Cadastro de Nova Obra</h1>
+      <form action="cadastro_obras_BD.php" method="POST">
+        <label for="nome">Nome da Obra:</label>
+        <input type="text" id="nome" name="nome" required /><br /><br />
+
+        <label for="tipo">Tipo:</label>
+        <select id="tipo" name="tipo" onchange="atualizarCampoDinamico()">
+          <option value="Filme">Filme</option>
+          <option value="Série">Série</option>
+          <option value="Anime">Anime</option></select
+        ><br /><br />
+
+        <label for="url_poster">URL do Poster:</label>
+        <input type="text" id="url_poster" name="url_poster" /><br /><br />
+
+        <label for="sinopse">Sinopse:</label>
+        <textarea id="sinopse" name="sinopse" rows="4" cols="50"></textarea
+        ><br /><br />
+
+        <label for="duracao_ou_episodios" id="label_dinamica"
+          >Duração/Episódios:</label
+        >
+        <input
+          type="text"
+          id="duracao_ou_episodios"
+          name="duracao_ou_episodios"
+          required
+          placeholder="Ex: 2h 15m"
+        /><br /><br />
+
+        <label for="nota">Nota (0 a 10):</label>
+        <input
+          type="number"
+          id="nota"
+          name="nota"
+          step="0.1"
+          min="0"
+          max="10"
+        /><br /><br />
+
+        <label for="generos">Gêneros (separados por vírgula):</label>
+        <input type="text" id="generos" name="generos" /><br /><br />
+
+        <button type="submit">Cadastrar Obra</button>
+      </form>
+    </main>
+
+    <script>
+      function atualizarCampoDinamico() {
+        const tipoSelect = document.getElementById("tipo");
+        const labelDinamica = document.getElementById("label_dinamica");
+        const inputDinamico = document.getElementById("duracao_ou_episodios");
+
+        if (tipoSelect.value === "Filme") {
+          labelDinamica.textContent = "Duração do Filme:";
+          inputDinamico.placeholder = "Ex: 2h 15m";
+        } else {
+          labelDinamica.textContent = "Quantidade de Episódios:";
+          inputDinamico.placeholder = "Ex: 24";
+        }
+      }
+      document.addEventListener("DOMContentLoaded", atualizarCampoDinamico);
+    </script>
+  </body>
+</html>
