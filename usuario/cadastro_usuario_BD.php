@@ -14,7 +14,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt = $conexao->prepare($sql);
         $stmt->execute([
             ':email' => $email,
-            ':senha' => $senha_hash,
+            ':senha' => $senha,
             ':data_nascimento' => $data_nascimento
         ]);
         echo "<p>Usuário cadastrado com sucesso!</p>";

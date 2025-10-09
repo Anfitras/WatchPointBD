@@ -18,7 +18,7 @@
 <body>
     <?php
     require_once "..\BD\conexaoBD.php";
-    $stmt = $conexao->query("SELECT id, email, data_nascimento FROM usuario");
+    $stmt = $conexao->query("SELECT id, email, senha, data_nascimento FROM usuario");
     $registros = $stmt->fetchAll();
     ?>
     <main>
@@ -27,6 +27,7 @@
             <thead>
                 <tr>
                     <th>Email</th>
+                    <th>Senha</th>
                     <th>Data de Nascimento</th>
                     <th>Editar</th>
                     <th>Excluir</th>
@@ -36,6 +37,7 @@
                 <?php foreach ($registros as $r) { ?>
                     <tr>
                         <td><?= htmlspecialchars($r['email']) ?></td>
+                        <td><?= htmlspecialchars($r['senha']) ?></td>
                         <td><?= htmlspecialchars(date('d/m/Y', strtotime($r['data_nascimento']))) ?></td>
                         <td><a href="editar_usuario.php?id=<?= $r['id'] ?>">Editar</a></td>
                         <td><a href="excluir_usuario.php?id=<?= $r['id'] ?>"
