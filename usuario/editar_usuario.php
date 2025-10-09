@@ -10,7 +10,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $stmt = $conexao->prepare($sql);
     $stmt->execute([':email' => $email, ':data_nascimento' => $data_nascimento, ':id' => $id]);
 
-    // Opcional: Atualizar senha
     if (!empty($_POST['senha'])) {
         $senha_hash = password_hash($_POST['senha'], PASSWORD_DEFAULT);
         $stmt_senha = $conexao->prepare("UPDATE usuario SET senha = :senha WHERE id = :id");

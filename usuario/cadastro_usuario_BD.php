@@ -6,7 +6,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $senha = $_POST['senha'] ?? '';
     $data_nascimento = $_POST['data_nascimento'] ?? '';
 
-    // É crucial fazer o hash da senha antes de salvar no banco de dados.
     $senha_hash = password_hash($senha, PASSWORD_DEFAULT);
 
     try {
