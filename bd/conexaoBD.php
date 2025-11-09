@@ -2,7 +2,7 @@
 $servidor = 'localhost';
 $usuario = 'root';
 $senha = '';
-$banco = 'bd_trabalho';
+$banco = 'bd_watchpoint';
 
 try {
     $dsn = "mysql:host=$servidor;dbname=$banco;charset=utf8";

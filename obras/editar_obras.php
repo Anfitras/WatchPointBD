@@ -9,30 +9,67 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $sinopse = $_POST['sinopse'];
     $duracao_ou_episodios = $_POST['duracao_ou_episodios'];
     $nota = $_POST['nota'];
-    $generos = $_POST['generos'];
+    $generos_selecionados = $_POST['generos'] ?? [];
 
-    $sql = "UPDATE obras SET nome = :nome, tipo = :tipo, url_poster = :url_poster, sinopse = :sinopse, 
-            duracao_ou_episodios = :duracao_ou_episodios, nota = :nota, generos = :generos WHERE id = :id";
-    $stmt = $conexao->prepare($sql);
-    $stmt->execute([
-        ':id' => $id,
-        ':nome' => $nome,
-        ':tipo' => $tipo,
-        ':url_poster' => $url_poster,
-        ':sinopse' => $sinopse,
-        ':duracao_ou_episodios' => $duracao_ou_episodios,
-        ':nota' => $nota,
-        ':generos' => $generos
-    ]);
-    header("Location: consulta_obras.php");
-    exit;
+    $conexao->beginTransaction();
+    try {
+        $sql_obra = "UPDATE obras SET nome = :nome, tipo = :tipo, url_poster = :url_poster, sinopse = :sinopse, 
+                     duracao_ou_episodios = :duracao_ou_episodios, nota = :nota WHERE id = :id";
+        $stmt_obra = $conexao->prepare($sql_obra);
+        $stmt_obra->execute([
+            ':id' => $id,
+            ':nome' => $nome,
+            ':tipo' => $tipo,
+            ':url_poster' => $url_poster,
+            ':sinopse' => $sinopse,
+            ':duracao_ou_episodios' => $duracao_ou_episodios,
+            ':nota' => $nota
+        ]);
+
+        $stmt_delete_generos = $conexao->prepare("DELETE FROM obras_generos WHERE id_obra = :id_obra");
+        $stmt_delete_generos->execute([':id_obra' => $id]);
+
+        if (!empty($generos_selecionados)) {
+            $sql_genero = "INSERT INTO obras_generos (id_obra, id_genero) VALUES (:id_obra, :id_genero)";
+            $stmt_genero = $conexao->prepare($sql_genero);
+            foreach ($generos_selecionados as $id_genero) {
+                $stmt_genero->execute([
+                    ':id_obra' => $id,
+                    ':id_genero' => $id_genero
+                ]);
+            }
+        }
+
+        $conexao->commit();
+        header("Location: consulta_obras.php");
+        exit;
+
+    } catch (PDOException $e) {
+        $conexao->rollBack();
+        echo "Erro ao atualizar a obra: " . $e->getMessage();
+        exit;
+    }
 }
 
 if (isset($_GET['id'])) {
     $id = $_GET['id'];
-    $stmt = $conexao->prepare("SELECT * FROM obras WHERE id = :id");
-    $stmt->execute([':id' => $id]);
-    $registro = $stmt->fetch();
+
+    $stmt_obra = $conexao->prepare("SELECT * FROM obras WHERE id = :id");
+    $stmt_obra->execute([':id' => $id]);
+    $registro = $stmt_obra->fetch();
+
+    if (!$registro) {
+        echo "Obra não encontrada.";
+        exit;
+    }
+
+    $generos_disponiveis = $conexao->query("SELECT * FROM generos ORDER BY nome")->fetchAll(PDO::FETCH_ASSOC);
+
+    $stmt_selecionados = $conexao->prepare("SELECT id_genero FROM obras_generos WHERE id_obra = :id");
+    $stmt_selecionados->execute([':id' => $id]);
+
+    $generos_selecionados_ids = $stmt_selecionados->fetchAll(PDO::FETCH_COLUMN);
+
 } else {
     echo "ID não fornecido.";
     exit;
@@ -78,9 +115,19 @@ if (isset($_GET['id'])) {
             <input type="number" id="nota" name="nota" step="0.1" min="0" max="10"
                 value="<?= htmlspecialchars($registro['nota']) ?>"><br><br>
 
-            <label for="generos">Gêneros (separados por vírgula):</label>
-            <input type="text" id="generos" name="generos"
-                value="<?= htmlspecialchars($registro['generos']) ?>"><br><br>
+            <fieldset>
+                <legend>Gêneros:</legend>
+                <?php foreach ($generos_disponiveis as $genero): ?>
+                    <?php
+                    $checked = in_array($genero['id'], $generos_selecionados_ids) ? 'checked' : '';
+                    ?>
+                    <label style="display: block; margin-bottom: 5px;">
+                        <input type="checkbox" name="generos[]" value="<?= $genero['id'] ?>" <?= $checked ?> />
+                        <?= htmlspecialchars($genero['nome']) ?>
+                    </label>
+                <?php endforeach; ?>
+            </fieldset>
+            <br />
 
             <button type="submit">Salvar Alterações</button>
         </form>

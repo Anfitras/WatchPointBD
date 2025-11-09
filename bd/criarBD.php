@@ -8,10 +8,10 @@ try {
     $conexao = new PDO($dsn, $usuario, $senha);
     $conexao->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-    $sql = "CREATE DATABASE IF NOT EXISTS bd_trabalho";
+    $sql = "CREATE DATABASE IF NOT EXISTS bd_watchpoint";
     $conexao->exec($sql);
 
-    echo "Banco de dados 'bd_trabalho' criado com sucesso (ou já existia).";
+    echo "Banco de dados 'bd_watchpoint' criado com sucesso (ou já existia).";
 } catch (PDOException $e) {
     echo "Erro ao criar o banco de dados: " . $e->getMessage();
 }
