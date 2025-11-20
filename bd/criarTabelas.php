@@ -69,7 +69,23 @@ try {
 
     $conexao->exec("CREATE INDEX idx_obras_tipo ON obras(tipo);");
 
+    $sql_avaliacoes = "
+        CREATE TABLE IF NOT EXISTS avaliacoes (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            id_usuario INT NOT NULL,
+            id_obra INT NOT NULL,
+            nota DECIMAL(3,1) NOT NULL,
+            comentario TEXT,
+            criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (id_usuario) REFERENCES usuario(id) ON DELETE CASCADE,
+            FOREIGN KEY (id_obra) REFERENCES obras(id) ON DELETE CASCADE
+        )
+    ";
+    $conexao->exec($sql_avaliacoes);
+    echo "Tabela 'avaliacoes' criada com sucesso.<br>";
 
+    $conexao->exec("CREATE INDEX idx_avaliacoes_usuario ON avaliacoes(id_usuario);");
+    $conexao->exec("CREATE INDEX idx_avaliacoes_obra ON avaliacoes(id_obra);");
 } catch (PDOException $e) {
     echo "Erro ao criar as tabelas ou índices: " . $e->getMessage();
 }

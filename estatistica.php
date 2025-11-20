@@ -34,7 +34,7 @@
         <h1>Painel de Estatísticas</h1>
 
         <?php
-        require_once "BD/conexaoBD.php";
+        require_once "bd/conexaoBD.php";
 
         $sql_tipo = "
             SELECT 
