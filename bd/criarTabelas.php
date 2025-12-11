@@ -78,14 +78,14 @@ try {
             comentario TEXT,
             criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             FOREIGN KEY (id_usuario) REFERENCES usuario(id) ON DELETE CASCADE,
-            FOREIGN KEY (id_obra) REFERENCES obras(id) ON DELETE CASCADE
-        )
+            FOREIGN KEY (id_obra) REFERENCES obras(id) ON DELETE CASCADE,
+            INDEX idx_avaliacoes_usuario (id_usuario), -- Índice definido aqui dentro
+            INDEX idx_avaliacoes_obra (id_obra)        -- Índice definido aqui dentro
+)
     ";
     $conexao->exec($sql_avaliacoes);
     echo "Tabela 'avaliacoes' criada com sucesso.<br>";
 
-    $conexao->exec("CREATE INDEX idx_avaliacoes_usuario ON avaliacoes(id_usuario);");
-    $conexao->exec("CREATE INDEX idx_avaliacoes_obra ON avaliacoes(id_obra);");
 } catch (PDOException $e) {
     echo "Erro ao criar as tabelas ou índices: " . $e->getMessage();
 }
